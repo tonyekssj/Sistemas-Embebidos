@@ -42,6 +42,14 @@ void uartInit(uart_port_t uart_num, uint32_t baudrate, uint8_t size, uint8_t par
 
 }
 
+void uartGoto11(uart_port_t uart_num)
+{
+    // Limpie un poco el arreglo de caracteres, los siguientes tres son equivalentes:
+     // "\e[1;1H" == "\x1B[1;1H" == {27,'[','1',';','1','H'}
+    const char caGoto11[] = "\e[1;1H";
+    uart_write_bytes(uart_num, caGoto11, sizeof(caGoto11));
+}
+
 void delayMs(uint16_t ms)
 {
     vTaskDelay(ms / portTICK_PERIOD_MS);
@@ -52,14 +60,6 @@ void uartClrScr(uart_port_t uart_num)
     // Uso "const" para sugerir que el contenido del arreglo lo coloque en Flash y no en RAM
     const char caClearScr[] = "\e[2J";
     uart_write_bytes(uart_num, caClearScr, sizeof(caClearScr));
-}
-
-void uartGoto11(uart_port_t uart_num)
-{
-    // Limpie un poco el arreglo de caracteres, los siguientes tres son equivalentes:
-     // "\e[1;1H" == "\x1B[1;1H" == {27,'[','1',';','1','H'}
-    const char caGoto11[] = "\e[1;1H";
-    uart_write_bytes(uart_num, caGoto11, sizeof(caGoto11));
 }
 
 bool uartKbhit(uart_port_t uart_num)
@@ -187,39 +187,38 @@ void comandoEstado(char *str){
     else 
         uartPuts(0,"Estado del LED [0]");
 }
+
 void app_main(void)
 {
     
     uint32_t start;
 
     uartInit(0,UARTS_BAUD_RATE,8,1,1,UART_TX_PIN,UART_RX_PIN);
-    //uartInit(1,UARTS_BAUD_RATE,8,0,1,UART2_TX_PIN,UART2_RX_PIN);
+    uartInit(1,UARTS_BAUD_RATE,8,0,1,UART2_TX_PIN,UART2_RX_PIN);
     start=xTaskGetTickCount();
     delayMs(1000);
     while(1) 
     {
-        char cad[20]={0};
+        char cad[5]={0};
 
         uartClrScr(0);
-        uartGets(0,cad);
-
-        if(cad[0] == 49 && cad[1] == 48){
-            uartPuts(0,"Es un 0x10");
+        uartGoto11(0);
+        uartGets(1,cad);
+        uartPuts(0,cad);
+        /*
+        if(cad[0] == 49 && cad[1] == 48)        
             comandoTimestamp(start);
-        }    
-
-        else if(cad[0] == 49 && cad[1] == 49){
-            comandoEstado(cad);
-        }
-
+        else if(cad[0] == 49 && cad[1] == 49)
+            uartPuts(0,"Es un 0x11");
         else if(cad[0] == 49 && cad[1] == 50)
             uartPuts(0,"Es un 0x12");
         else if(cad[0] == 49 && cad[1] == 51)
             uartPuts(0,"Es un 0x13");
         else 
            uartPuts(0,"Comando no reconocido"); 
-
+        */
         delayMs(1000);
+        
     }
-}
 
+}

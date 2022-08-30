@@ -172,7 +172,10 @@ void uartGotoxy(uart_port_t com, uint8_t x, uint8_t y){
         uart_write_bytes(com, caGotoxy2, sizeof(caGotoxy2));      
     }
 }
-
+void comandoOnce(char *str){
+    for (int i=0;i<5;i++)
+        *str++='9';
+}
 
 void app_main(void)
 {
@@ -188,18 +191,18 @@ void app_main(void)
 
     while(1) 
     {
-        char cad[5]={0};
-        
 
+        char cad[20]={0};
+    
         uartClrScr(0);
         uartPuts(0,"Comando 0x");
         uartGets(0,cad);
 
         if(cad[0] == 49 && cad[1] == 49){
             if(state == 0)
-                uartPuts(2,"11 0");
+                comandoOnce(cad);
             else  
-                uartPuts(2,"11 1");   
+                uartPuts(2,"Es uno"); 
         }
 
         uartPuts(2,cad);
