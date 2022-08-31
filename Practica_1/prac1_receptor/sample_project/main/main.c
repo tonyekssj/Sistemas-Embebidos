@@ -124,29 +124,7 @@ void uartPuts(uart_port_t com, char *str){
     }
 }
 
-void myItoa(uint16_t number, char* str, uint8_t base){
-    char num_temp[15]={0};
-	uint16_t count = 0;
-	
-	if(number < 1 || base < 2) {
-		*str++ = '0';
-		*str = 0;
-		return;
-	}
 
-	while(number) {
-		if((number % base) > 9) num_temp[count++] = (number % base) + '0' + 7;
-		else num_temp[count++] = (number % base) + '0';
-		number -= (number % base);
-		number /= base;
-	}
-
-	while(count > 0) {
-		*str++ = num_temp[--count];
-	}
-
-	*str = 0;
-}
 
 void uartGotoxy(uart_port_t com, uint8_t x, uint8_t y){
     char caGotoxy[] = "\e[0;0H";/*y;x*/
