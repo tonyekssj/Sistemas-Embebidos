@@ -23,6 +23,8 @@
 #define TASK_STACK_SIZE         (1048)
 #define READ_BUF_SIZE           (1024)
 
+#define ESTADO 1
+
 #define UART_CLK _DEF_REG_32b(0X3FF40014)
 
 void uartInit(uart_port_t uart_num, uint32_t baudrate, uint8_t size, uint8_t parity, uint8_t stop, uint8_t txPin, uint8_t rxPin)
@@ -172,40 +174,32 @@ void uartGotoxy(uart_port_t com, uint8_t x, uint8_t y){
         uart_write_bytes(com, caGotoxy2, sizeof(caGotoxy2));      
     }
 }
-void comandoOnce(char *str){
-    for (int i=0;i<5;i++)
-        *str++='9';
-}
 
 void app_main(void)
 {
 
+    gpio_reset_pin(2);
     gpio_set_direction(2, GPIO_MODE_OUTPUT);
-    gpio_set_level(2,1);
 
-    uint8_t state=gpio_get_level(2);
-
-    uartInit(0,UARTS_BAUD_RATE,8,1,1,UART_TX_PIN,UART_RX_PIN);
+    uartInit(0,UARTS_BAUD_RATE,8,0,1,UART_TX_PIN,UART_RX_PIN);
     uartInit(2,UARTS_BAUD_RATE,8,0,1,UART2_TX_PIN,UART2_RX_PIN);
     delayMs(1000);
-
     while(1) 
     {
 
         char cad[20]={0};
-    
+
         uartClrScr(0);
         uartPuts(0,"Comando 0x");
         uartGets(0,cad);
 
-        if(cad[0] == 49 && cad[1] == 49){
-            if(state == 0)
-                comandoOnce(cad);
-            else  
-                uartPuts(2,"Es uno"); 
-        }
+        if(cad[0] == 49 && cad[1] == 49)
+            uartPuts(2,"11 0");
 
-        uartPuts(2,cad);
-        delayMs(1000);
+        else
+            uartPuts(2,"11 1");
+
+        uartGetchar(0);
+        delayMs(200);
     }
 }

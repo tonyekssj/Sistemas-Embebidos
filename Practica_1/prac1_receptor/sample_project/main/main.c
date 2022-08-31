@@ -6,6 +6,7 @@
 #include "myUart.h"
 #include "esp_system.h"
 #include "esp_spi_flash.h"
+#include "driver/gpio.h"
 
 
 
@@ -23,6 +24,8 @@
 #define READ_BUF_SIZE           (1024)
 
 #define UART_CLK _DEF_REG_32b(0X3FF40014)
+
+static uint8_t estadoLed = 0;
 
 void uartInit(uart_port_t uart_num, uint32_t baudrate, uint8_t size, uint8_t parity, uint8_t stop, uint8_t txPin, uint8_t rxPin)
 {
@@ -188,37 +191,49 @@ void comandoEstado(char *str){
         uartPuts(0,"Estado del LED [0]");
 }
 
+void invertirEstado(){
+
+    estadoLed= !estadoLed;
+    gpio_set_level(2,estadoLed);
+
+}
+
 void app_main(void)
 {
     
     uint32_t start;
 
-    uartInit(0,UARTS_BAUD_RATE,8,1,1,UART_TX_PIN,UART_RX_PIN);
+    gpio_reset_pin(2);
+    gpio_set_direction(2,GPIO_MODE_OUTPUT);
+    
+    uartInit(0,UARTS_BAUD_RATE,8,0,1,UART_TX_PIN,UART_RX_PIN);
     uartInit(1,UARTS_BAUD_RATE,8,0,1,UART2_TX_PIN,UART2_RX_PIN);
+
     start=xTaskGetTickCount();
+
     delayMs(1000);
     while(1) 
     {
-        char cad[5]={0};
+        char cad[20]={0};
 
         uartClrScr(0);
         uartGoto11(0);
         uartGets(1,cad);
-        uartPuts(0,cad);
-        /*
+        
         if(cad[0] == 49 && cad[1] == 48)        
             comandoTimestamp(start);
         else if(cad[0] == 49 && cad[1] == 49)
-            uartPuts(0,"Es un 0x11");
+            uartPuts(0,cad);
         else if(cad[0] == 49 && cad[1] == 50)
-            uartPuts(0,"Es un 0x12");
+            uartPuts(0,cad);
         else if(cad[0] == 49 && cad[1] == 51)
-            uartPuts(0,"Es un 0x13");
+             invertirEstado();
         else 
            uartPuts(0,"Comando no reconocido"); 
-        */
+        
         delayMs(1000);
         
     }
 
 }
+

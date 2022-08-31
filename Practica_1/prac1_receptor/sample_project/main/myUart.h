@@ -1,6 +1,7 @@
 #include "driver/uart.h"
 
 void uartInit(uart_port_t uart_num, uint32_t baudrate, uint8_t size, uint8_t parity, uint8_t stop, uint8_t txPin, uint8_t rxPin);
+void uartGoto11(uart_port_t uart_num);
 
 // Send
 void uartPuts(uart_port_t uart_num, char *str);
@@ -15,4 +16,5 @@ void uartClrScr( uart_port_t uart_num );
 //comandos
 void comandoTimestamp(uint32_t start);
 void comandoEstado(char *str);
+void invertirEstado();
 
