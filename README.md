@@ -2,5 +2,7 @@
 Practicas (ESP32)
 
 Universidad Autonoma de Baja California   
-Ing en computacion  
-Antonio Guadalupe Vazquez Colin  
+#Carrera:  
+Ing en computacion    
+#Nombre:  
+Antonio Guadalupe Vazquez Colin    
